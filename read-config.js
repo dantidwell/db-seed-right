@@ -1,6 +1,6 @@
 var path = require('path');
 
-var supportedConfigPath = 'config/config.json';
+var supportedConfigPath = 'config.json';
 
 module.exports = function(rootPath) {
     var configPath = path.join(rootPath, supportedConfigPath); 
