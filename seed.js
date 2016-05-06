@@ -27,26 +27,44 @@ var depCb = function(err,result) {
     /* 
         Build a graph of the fk dependencies
     */
-    var graph = []; //graph adjacency list
-    var metadata = {}; //graph node metadata
+    var graph = {}; //graph data structure
     
     for(var i=0; i<result.rows.length; i++) { 
         var parent = result.rows[i].parent_table_name; 
         var child = result.rows[i].child_table_name;
         
         /* add parent to the adjacency list if needed */
-        if(!metadata[parent]) { 
-            metadata[parent] = { 
-                idx: graph.length, //index in the adjacency list
-                seeded: false //whether or not the table has been seeded
-            }
-            graph.push([]);        
+        if(!graph[parent]) { 
+            graph[parent] = { 
+                seeded: false, //whether or not the table has been seeded
+                adjList: []
+            }        
         }
-        graph[metadata[parent].idx].push(child);
+        if(child!==null) { 
+            graph[parent].adjList.push(child);            
+        }
     }
-    seed(graph, metadata); 
+    
+    console.log(graph);
+    
+    var nodeArray = Object.keys(graph);
+    for(var i = 0; i<nodeArray.length; i++) {
+        var node = nodeArray[i]; 
+        seed(node, graph);        
+    } 
 }
 
-var seed = function(graph, metadata) { 
+var seed = function(node, graph) { 
+    for(var i = 0; i < graph[node].adjList.length; i++) {
+        var nextNode = graph[node].adjList[i]; 
+        seed(nextNode, graph);
+    }
     
+    /* 
+        Base case - seed this table
+    */
+    if(!graph[node].seeded) { 
+        graph[node].seeded = true;
+        console.log(`Seeding ${node}`);        
+    }
 }
