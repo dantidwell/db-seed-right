@@ -2,27 +2,9 @@
   "development": {
     "username": "danieltidwell",
     "password": null,
-    "database": "bookitlegal_dev",
+    "database": "testdb",
     "host": "127.0.0.1",
     "port": "5432",
     "dialect": "postgres"
-  },
-  "test": {
-    "username": "root",
-    "password": null,
-    "database": "bookitlegal_test",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  },
-  "production": {
-    "use_env_variable": "DATABASE_URL",
-    "username": "nplloobkfzqeuz",
-    "password": "dZkyv2l09_-xkMNIEcZQyX3h3L",
-    "database": "dcm2sjte1ghvtn",
-    "host": "ec2-54-235-153-179.compute-1.amazonaws.com",
-    "dialect": "postgres",
-    "dialectOptions": {
-      "ssl": true
-    }
   }
 }
