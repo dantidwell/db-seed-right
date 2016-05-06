@@ -11,5 +11,8 @@
     "url": "https://www.github.com/dantidwell/db-seed-right"
   },
   "author": "Dan Tidwell",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "pg": "^4.5.5"
+  }
 }
