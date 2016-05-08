@@ -15,5 +15,8 @@
   "dependencies": {
     "pg": "^4.5.5",
     "sequelize": "^3.23.0"
+  }, 
+  "bin" : { 
+    "db-seed-right" : "./db-seed-right.js" 
   }
 }
