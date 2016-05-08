@@ -13,6 +13,7 @@
   "author": "Dan Tidwell",
   "license": "ISC",
   "dependencies": {
-    "pg": "^4.5.5"
+    "pg": "^4.5.5",
+    "sequelize": "^3.23.0"
   }
 }
