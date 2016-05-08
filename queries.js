@@ -32,7 +32,8 @@ var getTableDependencies = function(schemas) {
                     ON rc.constraint_name = ctu.constraint_name     
             ) tblsc
             
-            ON tbls.table_schema = tblsc.parent_table_schema AND tbls.table_name = tblsc.parent_table_name
+            ON tbls.table_schema = tblsc.parent_table_schema AND 
+               tbls.table_name = tblsc.parent_table_name
             
         WHERE 
             tbls.table_schema IN (${schemasDelimited})
