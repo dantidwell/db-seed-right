@@ -1,14 +1,17 @@
 'use strict'
 
 var pg = require('pg');
+var Sequelize = require('sequelize');
 var queries = require('./queries');
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 console.log(`Using NODE_ENV=${process.env.NODE_ENV}`);
 
-var config = require('./read-config')(process.cwd());
+var sqlConfig = require('./read-config')(process.cwd());
 
-var client = new pg.Client(config);
+var sequelize = new Sequelize(sqlConfig.config.database, sqlConfig.config.username, sqlConfig.config.password, sqlConfig.config);
+var client = new pg.Client(sqlConfig.config);
+var queryInterface = sequelize.getQueryInterface();
 
 client.connect(function(err) { 
     if(err) { 
@@ -18,15 +21,15 @@ client.connect(function(err) {
     client.query(queries.getTableDependencies(['public']), depCb);
 })
 
+var queryQueue = []
+
 var depCb = function(err,result) { 
     if(err) { 
         console.log(err);
         process.exit(1);
     }
     
-    /* 
-        Build a graph of the fk dependencies
-    */
+    /* Build a graph of the fk dependencies */
     var graph = {}; //graph data structure
     
     for(var i=0; i<result.rows.length; i++) { 
@@ -43,28 +46,43 @@ var depCb = function(err,result) {
         if(child!==null) { 
             graph[parent].adjList.push(child);            
         }
-    }
-    
-    console.log(graph);
-    
+    }    
     var nodeArray = Object.keys(graph);
     for(var i = 0; i<nodeArray.length; i++) {
         var node = nodeArray[i]; 
-        seed(node, graph);        
-    } 
+        buildQueryQueue(node, graph);        
+    }
+    flushQueryQueue(queryQueue);
 }
 
-var seed = function(node, graph) { 
+var buildQueryQueue = function(node, graph) {
+    //seed the current node's dependencies 
     for(var i = 0; i < graph[node].adjList.length; i++) {
         var nextNode = graph[node].adjList[i]; 
-        seed(nextNode, graph);
+        buildQueryQueue(nextNode, graph);
     }
-    
-    /* 
-        Base case - seed this table
-    */
-    if(!graph[node].seeded) { 
+    //skip if already seeded
+    if(graph[node].seeded) {
+        return;
+    }
+    //try to import seeder, push seeder onto query queue if successful
+    var seederName = node.replace('_', '-');
+    try { 
+        var seeder = require(`${sqlConfig.seedersPath}/${seederName}-seeder`)
         graph[node].seeded = true;
-        console.log(`Seeding ${node}`);        
+        seeder.up && queryQueue.push(seeder.up);
+    } catch(ex) { 
+        console.error(`No seeder found for table ${node}`);
     }
 }
+
+var flushQueryQueue = function(q) {
+    if(q.length===0) { 
+        process.exit(0);
+    }
+     
+    q.shift()(queryInterface).then( function() { 
+        flushQueryQueue(q);
+    })
+}
+
