@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 'use strict'
 
 var pg = require('pg');
@@ -91,7 +92,6 @@ var clean = function(table) {
         });
     }
 }
-
 /* 
     run queries synchronously in forward or reverse order by chaining promises
 */
