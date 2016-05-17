@@ -65,7 +65,7 @@ var seed = function(table) {
         */       
 
         try {
-            var seederPath = `${sqlConfig.seedersPath}/${table.replace('_','-')}-seeder`;
+            var seederPath = `${sqlConfig.seedersPath}/${table.replace(/_/g,'-')}-seeder`;
             var seeder = require(seederPath);    
             if(!seeder || !seeder.up) { 
                 throw `${seederPath} is not a valid sequelize seeder`;

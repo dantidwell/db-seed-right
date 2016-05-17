@@ -1,6 +1,6 @@
 {
   "name": "db-seed-right",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Runs sequelize db seeder in an order that respects foriegn key constraints",
   "main": "index.js",
   "scripts": {
